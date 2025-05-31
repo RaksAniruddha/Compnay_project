@@ -16,6 +16,6 @@ router.route("/isuserveryfied/:userId").post(isUserVeryfied);
 router.route("/generateNewPassword/:userId").post(generateNewPassword);
 router.route("/viewPersonalDetails").get(isAuthenticated, viewPersonalDetails);
 router.route("/editPersonalDetails").put(isAuthenticated,upload.single("profilePhoto") ,editPersonalDetails);
-router.route("/addDeleveryAdress").post(isAuthenticated, addDeliveryAddress);
-router.route("/setAsDefaultAdress").post(isAuthenticated, setAsDefaultAddress);
+router.route("/addDeleveryAddress").post(isAuthenticated, addDeliveryAddress);
+router.route("/setAsDefaultAddress").post(isAuthenticated, setAsDefaultAddress);
 export default router
