@@ -3,18 +3,20 @@ import jwt from 'jsonwebtoken';
 import { User } from '../model/user.model.js'
 import { sendEmail } from '../utills/nodemailer.js';
 import { otpGenerator } from '../utills/otpGenerator.js';
-import { AppError } from '../middleware/errorHandler.js';
+// import { AppError } from '../middleware/errorHandler.js';
 import { logger } from '../utills/logger.js';
+import { deleteImage, uploadImage } from '../utills/cloudinary.js';
+import { Address } from '../model/userdeliveryDetails.model.js';
 
-export const register = async (req, res,next) => {
+export const register = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
 
         if (!username || !email || !password) {
-            throw new AppError('All Fields Are required',401);
-            //  return res.status(404).json({
-            //     messege: "All fields are required"
-            // })
+            // throw new AppError('All Fields Are required',401);
+            return res.status(404).json({
+                messege: "All fields are required"
+            })
         }
         let user = await User.find({ email: email });
         if (user.length !== 0) {
@@ -28,18 +30,18 @@ export const register = async (req, res,next) => {
             email,
             password: hashPassword
         })
-        logger.info(`new User registration ${user.username,user.email}`);
+        logger.info(`new User registration ${user.username, user.email}`);
         return res.status(200).json({
             messege: "User created"
         })
     } catch (error) {
-       logger.error(error);
-       next(error);
+        logger.error(error);
+        next(error);
     }
 }
 
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -74,8 +76,8 @@ export const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "Internal server error" });
+        logger.error(error);
+        next(error);
     }
 
 }
@@ -87,15 +89,12 @@ export const logout = async (_, res) => {
             success: true
         })
     } catch (error) {
-        console.log(error);
-        return res.status(500).json({
-            success: false,
-            massege: "Failed to Logout"
-        })
+        logger.error(error);
+        next(error);
     }
 }
 
-export const ForgotPassword = async (req, res) => {
+export const ForgotPassword = async (req, res,next) => {
     try {
         const { email } = req.body;
         let user = await User.findOne({ email });
@@ -106,18 +105,19 @@ export const ForgotPassword = async (req, res) => {
             })
         }
         user.otp_code = otpGenerator();
-        user=await user.save();
+        user = await user.save();
         sendEmail(email, "Forgot Password Otp", `Hey Its Your Veryfication Code:${user.otp_code}
             Go And Verify ${process.env.FRONTEND_URL + "/" + user._id}`);
         return res.status(200).json({
-                success: true,
-                messege: "Find Veryfication Code in your Email"
-            })
+            success: true,
+            messege: "Find Veryfication Code in your Email"
+        })
     } catch (error) {
-        console.log(error);
+        logger.error(error);
+        next(error);
     }
 }
-export const isUserVeryfied = async (req, res) => {
+export const isUserVeryfied = async (req, res, next) => {
     try {
         const { otp_code } = req.body;
         const { userId } = req.params;
@@ -134,7 +134,8 @@ export const isUserVeryfied = async (req, res) => {
             messege: "User Verifed"
         })
     } catch (error) {
-        console.log(error);
+        logger.error(error);
+        next(error);
     }
 }
 
@@ -152,3 +153,124 @@ export const isUserVeryfied = async (req, res) => {
 //         console.log(error);
 //     }
 // }
+
+
+export const generateNewPassword = async (req, res,next) => {
+    try {
+        const { password, forgot_password } = req.body;
+        const { userId } = req.params;
+
+        if (!forgot_password.includes(password)) {
+            return res.status(400).json({
+                success: false,
+                messege: "No Match"
+            })
+        }
+        let user = await User.findById(userId);
+        user.password = password;
+        user = await user.save();
+        return res.status(200).json({
+            success: true,
+            user,
+            messege: "Password Updated Succesfully"
+        })
+
+    } catch (error) {
+        logger.error(error);
+        next(error);
+    }
+}
+
+
+export const viewPersonalDetails = async (req, res, next) => {
+    try {
+        const userId = req.id;
+        const user = await User.findById(userId);
+        return res.status(200).json({
+            user
+        })
+    } catch (error) {
+        logger.error(error);
+        next(error);
+    }
+}
+
+export const editPersonalDetails = async (req, res, next) => {
+    try {
+        const userId = req.id;
+        const profilePhoto = req.file;
+        const { username } = req.body;
+
+        let user = await User.findById(userId);
+        if (user.profilePhoto) {
+            const publicId = user.profilePhoto.split("/").pop().split(".")[0];
+            await deleteImage(publicId);
+        }
+        const cloud_response = await uploadImage(profilePhoto.path);
+        user.username = username;
+        user.profilePhoto = cloud_response.secure_url;
+        user = await user.save();
+        logger.info(`${user.username} is updated`);
+        return res.status(200).json({
+            user,
+            messege: "user is updated"
+        })
+    } catch (error) {
+        logger.error(error);
+        next(error);
+    }
+}
+
+export const addDeliveryAddress = async (req, res, next) => {
+    try {
+        const { fullname, primaryPhoneNumber, secondaryPhoneNumber,
+            category, address, city, state, pincode } = req.body;
+
+        const userId = req.id;
+
+        if (!fullname || !primaryPhoneNumber || !category
+            || !address || !city || !state || !pincode) {
+            return res.status(400).json({
+                messege: "All fields are required"
+            })
+        }
+
+        // step -1 create new Adress
+        const newaddress = await Address.create({
+            fullname, primaryPhoneNumber, secondaryPhoneNumber,
+            category, address, city, state, pincode
+        })
+
+        let user = await User.findById(userId);
+        // Step 2 only applicable for first time Address insertion
+        if (!user.defaultAddress) {
+            user.defaultAddress = newaddress._id;
+            user = await user.save();
+        }
+        return res.status(200).json({
+            newaddress,
+            user
+        })
+    } catch (error) {
+        logger.error(error);
+        next(error);
+    }
+}
+
+export const setAsDefaultAddress = async (req, res, next) => {
+    try {
+        const userId = req.id;
+        const { addressId } = req.params;
+        const user = await findByIdAndUpdate(
+            userId,
+            { $addToSet: { defaultAddress: addressId } },
+            { new: true }
+        );
+        return res.status(200).json({
+            user
+        })
+    } catch (error) {
+        logger.error(error);
+        next(error);
+    }
+}

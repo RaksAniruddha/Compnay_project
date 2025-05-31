@@ -1,9 +1,21 @@
 import express from 'express';
-import { ForgotPassword, isUserVeryfied, login, logout, register } from '../controller/user.controller.js';
-const router=express.Router();
+import {
+    addDeliveryAddress, editPersonalDetails,
+    ForgotPassword, generateNewPassword,
+    isUserVeryfied, login, logout, register,
+    setAsDefaultAddress, viewPersonalDetails
+} from '../controller/user.controller.js';
+import { isAuthenticated } from '../middleware/isAuth.js';
+import { upload } from '../utills/multer.js';
+const router = express.Router();
 router.route("/").post(register);
 router.route("/login").post(login);
 router.route("/logout").get(logout);
 router.route("/forgot-password").post(ForgotPassword);
 router.route("/isuserveryfied/:userId").post(isUserVeryfied);
+router.route("/generateNewPassword/:userId").post(generateNewPassword);
+router.route("/viewPersonalDetails").get(isAuthenticated, viewPersonalDetails);
+router.route("/editPersonalDetails").put(isAuthenticated,upload.single("profilePhoto") ,editPersonalDetails);
+router.route("/addDeleveryAdress").post(isAuthenticated, addDeliveryAddress);
+router.route("/setAsDefaultAdress").post(isAuthenticated, setAsDefaultAddress);
 export default router

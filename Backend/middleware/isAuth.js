@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { logger } from '../utills/logger.js';
 export const isAuthenticated=async(req,res,next)=>{
     try {
         const token=req.cookies.token;
@@ -15,9 +16,9 @@ export const isAuthenticated=async(req,res,next)=>{
                 massege:"User not autheticate"
             })
         }
-        req.user=decoded.userId;
+        req.id=decoded.userId;
         next();
     } catch (error) {
-        console.log(error);
+        logger(error)
     }
 }

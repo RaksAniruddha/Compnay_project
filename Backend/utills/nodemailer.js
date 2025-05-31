@@ -14,7 +14,7 @@ export const sendEmail = (email, subject, message) => {
     });
 
     const mailOptions = {
-        from: process.env.MAIL_USER,  // corrected from `form`
+        from: process.env.MAIL_USER, 
         to: email,
         subject,
         text: message,
