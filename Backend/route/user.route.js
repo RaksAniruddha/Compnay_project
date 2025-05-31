@@ -5,5 +5,5 @@ router.route("/").post(register);
 router.route("/login").post(login);
 router.route("/logout").get(logout);
 router.route("/forgot-password").post(ForgotPassword);
-router.route("/isuserveryfied").post(isUserVeryfied);
+router.route("/isuserveryfied/:userId").post(isUserVeryfied);
 export default router

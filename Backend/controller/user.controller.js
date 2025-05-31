@@ -131,7 +131,7 @@ export const isUserVeryfied = async (req, res) => {
         await user.save();
         return res.status(200).json({
             success: true,
-            messege: "Go to Your Login Page"
+            messege: "User Verifed"
         })
     } catch (error) {
         console.log(error);
