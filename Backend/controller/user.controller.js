@@ -59,6 +59,7 @@ export const login = async (req, res, next) => {
         }
 
         const comparePassword = await bcrypt.compare(password, user.password);
+
         if (!comparePassword) {
             return res.status(401).json({
                 message: "Invalid email ID or password"
@@ -66,7 +67,9 @@ export const login = async (req, res, next) => {
         }
 
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-
+       
+        logger.info(`${user.username} is logged in sucessfully`);
+        
         res.status(200).cookie("token", token, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
@@ -84,6 +87,7 @@ export const login = async (req, res, next) => {
 
 export const logout = async (_, res) => {
     try {
+        logger.info("logout sucessfully");
         res.status(200).cookie("token", "", { maxAge: 0 }).json({
             massege: "Logout Sucessfully",
             success: true
@@ -94,7 +98,7 @@ export const logout = async (_, res) => {
     }
 }
 
-export const ForgotPassword = async (req, res,next) => {
+export const ForgotPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
         let user = await User.findOne({ email });
@@ -128,7 +132,9 @@ export const isUserVeryfied = async (req, res, next) => {
             })
         }
         user.otp_code = "";
+        user.is_verified = true;
         await user.save();
+        logger.info(`${user.username} is a verifyed User`);
         return res.status(200).json({
             success: true,
             messege: "User Verifed"
@@ -155,19 +161,22 @@ export const isUserVeryfied = async (req, res, next) => {
 // }
 
 
-export const generateNewPassword = async (req, res,next) => {
+export const generateNewPassword = async (req, res, next) => {
     try {
-        const { password, forgot_password } = req.body;
+        const { password } = req.body;
         const { userId } = req.params;
-
-        if (!forgot_password.includes(password)) {
-            return res.status(400).json({
+        let user = await User.findById(userId);
+        if (!user.is_verified) {
+            return res.status(401).json({
                 success: false,
-                messege: "No Match"
+                messege: "Verify First"
             })
         }
-        let user = await User.findById(userId);
-        user.password = password;
+
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        user.password = hashPassword;
+        user.is_verified = false;
         user = await user.save();
         return res.status(200).json({
             success: true,
@@ -185,7 +194,7 @@ export const generateNewPassword = async (req, res,next) => {
 export const viewPersonalDetails = async (req, res, next) => {
     try {
         const userId = req.id;
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).select("username email profilePhoto").populate("defaultAddress");
         return res.status(200).json({
             user
         })
@@ -200,7 +209,12 @@ export const editPersonalDetails = async (req, res, next) => {
         const userId = req.id;
         const profilePhoto = req.file;
         const { username } = req.body;
-
+        if (!profilePhoto || !username) {
+            return res.status(401).json({
+                success: false,
+                messege: "All fields are required"
+            })
+        }
         let user = await User.findById(userId);
         if (user.profilePhoto) {
             const publicId = user.profilePhoto.split("/").pop().split(".")[0];
@@ -247,6 +261,7 @@ export const addDeliveryAddress = async (req, res, next) => {
             user.defaultAddress = newaddress._id;
             user = await user.save();
         }
+        logger.info(`new delivery adress is added by ${user.username}`)
         return res.status(200).json({
             newaddress,
             user
@@ -261,11 +276,12 @@ export const setAsDefaultAddress = async (req, res, next) => {
     try {
         const userId = req.id;
         const { addressId } = req.params;
-        const user = await findByIdAndUpdate(
-            userId,
-            { $addToSet: { defaultAddress: addressId } },
-            { new: true }
-        );
+        console.log(addressId);
+        
+        let user= await User.findById(userId);
+        user.defaultAddress=addressId;
+        user=await user.save();
+        logger.info(`default adress is changed by ${user.username}`);
         return res.status(200).json({
             user
         })

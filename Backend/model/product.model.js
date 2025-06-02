@@ -17,6 +17,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    stock:{
+        type:Number,
+        required:true
+    },
     discount: {
         type:Number,
     },
@@ -28,6 +32,6 @@ const productSchema = new mongoose.Schema({
     //     enum:["none","confirmed","shipped","submitted","delivered"],
     //     default:"none"
     // }
-});
+},{timestamps:true});
 
 export const Products = mongoose.model("Products", productSchema);

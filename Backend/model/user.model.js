@@ -33,6 +33,6 @@ const userSchema = new mongoose.Schema({
         ref:"Address"
     },
     
-})
+},{timestamps:true})
 
 export const User = mongoose.model("User", userSchema);

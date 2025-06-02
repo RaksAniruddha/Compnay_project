@@ -33,6 +33,6 @@ const addressSchema = new mongoose.Schema({
         type: Number,
         required: true
     }
-})
+},{timestamps:true})
 
 export const Address = mongoose.model("Address", addressSchema);
