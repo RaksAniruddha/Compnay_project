@@ -17,6 +17,7 @@ export const isAuthenticated=async(req,res,next)=>{
             })
         }
         req.id=decoded.userId;
+        req.role=decoded.role;
         next();
     } catch (error) {
         logger(error)

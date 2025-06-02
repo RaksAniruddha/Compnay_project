@@ -13,13 +13,13 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    categories: {
-        type: String,
+    caterogyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:"Category",
         required: true
     },
     stock:{
         type:Number,
-        required:true
     },
     discount: {
         type:Number,
@@ -27,6 +27,10 @@ const productSchema = new mongoose.Schema({
     finalPrice: {
         type:Number,
     },
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }
     // deleveryStatus:{
     //     type:String,
     //     enum:["none","confirmed","shipped","submitted","delivered"],

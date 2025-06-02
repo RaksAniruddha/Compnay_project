@@ -17,7 +17,6 @@ router.route("/isuserveryfied/:userId").post(isUserVeryfied);
 router.route("/generateNewPassword/:userId").post(generateNewPassword);
 // Auth Routes End
 
-
 router.route("/viewPersonalDetails").get(isAuthenticated, viewPersonalDetails);
 router.route("/editPersonalDetails").put(isAuthenticated,upload.single("profilePhoto") ,editPersonalDetails);
 router.route("/addDeleveryAddress").post(isAuthenticated, addDeliveryAddress);
