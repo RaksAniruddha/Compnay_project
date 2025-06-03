@@ -13,6 +13,10 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    carouselImage:{
+        type:[String],
+        required:true,
+    },
     caterogyId: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"Category",

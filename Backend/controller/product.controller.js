@@ -7,19 +7,32 @@ export const addProduct = async (req, res, next) => {
     try {
         const { productName, productPrice, discount } = req.body;
         const { caterogyId } = req.params;
-        const productImage = req.file;
+        const productImage = req.files?.productImage?.[0];
+        const carouselImages = req.files?.carouselImages || [];
         if (req.role === "buyer") {
             return res.status(400).json({
                 messege: "This Operation is not for you"
             })
         }
+        
         if (!productName || !productPrice || !productImage) {
             return res.status(401).json({
                 success: false,
                 messege: "Mandetory fileds are required"
             })
         }
-        const newProduct = {};
+        const newProduct = {
+            carouselImage: []
+        };
+
+        // if carosel image has length less than zero
+
+        if (carouselImages && carouselImages.length > 0) {
+            for (const item of carouselImages) {
+                const cloudResponse = await uploadImage(item.path);
+                newProduct.carouselImage.push(cloudResponse.secure_url);
+            }
+        }
 
         // if discount then calculations of discont is occerd and added to final price  
         if (discount) {
@@ -61,7 +74,8 @@ export const editProduct = async (req, res, next) => {
                 messege: "This Operation is not for you"
             })
         }
-        const productImage = req.file;
+        const productImage = req.files?.productImage?.[0];
+        const carouselImages = req.files?.carouselImages || [];
         if (req.role === "buyer") {
             return res.status(400).json({
                 messege: "This Operation is not for you"
@@ -74,7 +88,9 @@ export const editProduct = async (req, res, next) => {
             })
         }
 
-        const newProduct = {};
+        const newProduct = {
+            carouselImage: []
+        };
         // if discount then calculations of discont is occerd and added to final price  
         if (discount) {
             const price = (productPrice * discount) / 100;
@@ -82,8 +98,21 @@ export const editProduct = async (req, res, next) => {
             newProduct.finalPrice = finalPrice;
         }
 
+        if (carouselImages && carouselImages.length > 0) {
+            const product = await Products.findById(productId);
+            for (const item of product.carouselImage) {
+                const publicId = item.split("/").pop().split(".")[0];
+                await deleteImage(publicId);
+            }
+            for (const item of carouselImages) {
+                const cloudResponse = await uploadImage(item.path);
+                newProduct.carouselImage.push(cloudResponse.secure_url);
+            }
+        }
+
         if (productImage) {
-            const publicId = productImage.split("/").pop().split(".")[0];
+            const product = await Products.findById(productId);
+            const publicId = product.productImage.split("/").pop().split(".")[0];
             await deleteImage(publicId);
             const cloudResponse = await uploadImage(productImage.path);
             newProduct.productImage = cloudResponse.secure_url;
@@ -123,6 +152,10 @@ export const deleteProduct = async (req, res, next) => {
         const product = await Products.findById(productId);
         const publicId = product.productImage.split("/").pop().split(".")[0];
         await deleteImage(publicId);
+        for (const item of product.carouselImage) {
+            const publicId = item.split("/").pop().split(".")[0];
+            await deleteImage(publicId);
+        }
         await Products.findByIdAndDelete(productId);
         return res.status(200).json({
             success: true,
