@@ -1,7 +1,7 @@
-import { Products } from "../model/product.model.js";
-import { deleteImage, uploadImage } from "../utills/cloudinary.js";
-import { logger } from "../utills/logger.js";
-import { sendEmail } from "../utills/nodemailer.js";
+import { Products } from "../../model/Adminmodel/product.model.js";
+import { deleteImage, uploadImage } from "../../utills/cloudinary.js";
+import { logger } from "../../utills/logger.js";
+import { sendEmail } from "../../utills/nodemailer.js";
 
 export const addProduct = async (req, res, next) => {
     try {
@@ -285,8 +285,6 @@ export const stockAlert = async (req, res, next) => {
         }
         const products = await Products.find({ stock: { $lte: 10 } }).populate("user");
         products.forEach((item) => {
-            console.log(item.user.email);
-
             sendEmail(item.user.email, "Stock Issue", "please refill Your Stock")
         })
         res.status(200).json({

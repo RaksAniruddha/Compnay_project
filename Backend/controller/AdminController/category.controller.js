@@ -1,5 +1,5 @@
-import { Category } from "../model/category.model.js";
-import { logger } from "../utills/logger.js";
+import { Category } from "../../model/Adminmodel/category.model.js";
+import { logger } from "../../utills/logger.js";
 
 export const addCategory=async(req,res,next)=>{
     try {

@@ -1,6 +1,6 @@
 import express from 'express';
 import { isAuthenticated } from '../middleware/isAuth.js';
-import { addCategory, deleteCategory, editCategory, getAllCategory } from '../controller/category.controller.js';
+import { addCategory, deleteCategory, editCategory, getAllCategory } from '../controller/AdminController/category.controller.js';
 
 const router=express.Router();
 

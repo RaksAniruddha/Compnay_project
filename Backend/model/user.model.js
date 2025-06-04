@@ -13,10 +13,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    role:{
-        type:String,
-        enum:["vendor","super_admin","store_Manager","buyer"],
-        default:"buyer"
+    role: {
+        type: String,
+        enum: ["vendor", "super_admin", "store_Manager", "buyer"],
+        default: "buyer"
     },
     otp_code: {
         type: String,
@@ -28,11 +28,20 @@ const userSchema = new mongoose.Schema({
     profilePhoto: {
         type: String
     },
-    defaultAddress:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Address"
+    defaultAddress: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address"
     },
-    
-},{timestamps:true})
+    phoneNumber: {
+        type: Number,
+    },
+    gstInNumber: {
+        type: String,
+    },
+    adharCard:{
+        type:String
+    }
+
+}, { timestamps: true })
 
 export const User = mongoose.model("User", userSchema);
