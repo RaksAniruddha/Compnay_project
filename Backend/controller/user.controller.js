@@ -26,33 +26,7 @@ export const register = async (req, res, next) => {
             })
         }
 
-        if (role === "vendor" || role === "store_Manager") {
-            const { phoneNumber, gstInNumber } = req.body;
-            const adharCard = req.file;
-            if (!phoneNumber || !gstInNumber || !adharCard) {
-                return res.status(401).json({
-                    messege: "All Fields Are Required"
-                })
-            }
-            const hashPassword = await bcrypt.hash(password, 10);
-            const cloud_response = await uploadImage(adharCard.path);
-            let vendor = await Vendor.create({
-                username,
-                email,
-                password: hashPassword,
-                phoneNumber,
-                gstInNumber,
-                role,
-                adharCard: cloud_response.secure_url
-            })
-
-            return res.status(200).json({
-                vendor,
-                messege: "Wait For Admin Veryfication"
-            })
-
-        }
-
+     
         const hashPassword = await bcrypt.hash(password, 10);
         user = await User.create({
             username,
@@ -313,78 +287,6 @@ export const setAsDefaultAddress = async (req, res, next) => {
         logger.info(`default adress is changed by ${user.username}`);
         return res.status(200).json({
             user
-        })
-    } catch (error) {
-        logger.error(error);
-        next(error);
-    }
-}
-
-export const getAllAdminDetails = async (req, res, next) => {
-    try {
-        const user = req.role;
-
-        if (user === "buyer") {
-            return res.status(401).json({
-                messege: "This Operation is not for you"
-            })
-        }
-
-        const data = await Vendor.find();
-
-        return res.status(200).json({
-            data
-        })
-    } catch (error) {
-        next(error);
-        logger.info(error);
-    }
-}
-
-export const giveAcessToOtherAdmin = async (req, res, next) => {
-    try {
-        const user = req.role;
-        const { vendorId } = req.params;
-        if (user !== "super_admin") {
-            return res.status(401).json({
-                messege: "This Operation is not for you"
-            })
-        }
-        const vendor = await Vendor.findById(vendorId);
-        const newUser = await User.create({
-            username: vendor.username,
-            password: vendor.password,
-            email: vendor.email,
-            role: vendor.role,
-            phoneNumber: vendor.phoneNumber,
-            gstInNumber: vendor.gstInNumber,
-            adharCard: vendor.adharCard
-        })
-        logger.info("new user is created by super admin");
-        return res.status(200).json({
-            newUser
-        })
-
-    } catch (error) {
-        next(error);
-        logger.error(error);
-    }
-}
-export const rejectAcessOfAdmin = async (req, res, next) => {
-    try {
-        const { vendorId } = req.params;
-        const user=req.role;
-        if(user!=="super_admin"){
-            return res.status(401).json({
-                messege:"This Option IS Not For You"
-            })
-        }
-        let vendor = await Vendor.findById(vendorId);
-        const publicId = vendor.adharCard.split("/").pop().split(".")[0];
-        await deleteImage(publicId);
-        vendor=await Vendor.findByIdAndDelete(vendorId);
-        return res.status(200).json({
-            vendor
         })
     } catch (error) {
         logger.error(error);

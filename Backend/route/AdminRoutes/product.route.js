@@ -1,11 +1,11 @@
 import express from 'express';
-import { isAuthenticated } from '../middleware/isAuth.js';
+import { isAuthenticated } from '../../middleware/isAuth.js';
 import {
     addProduct, bulckStockEditByAdmin, deleteProduct, editProduct,
     getAllProduct, getAllProductAdmin, stockAlert, stockEdit,
     trackStock
-} from '../controller/AdminController/product.controller.js';
-import { upload } from '../utills/multer.js';
+} from '../../controller/AdminController/product.controller.js';
+import { upload } from '../../utills/multer.js';
 
 const router = express.Router();
 

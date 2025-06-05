@@ -34,7 +34,13 @@ const productSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
-    }
+    },
+    addToWishList:[
+        {
+            type:mongoose.Schema.Types.ObjectId,
+            ref:"User"
+        }
+    ]
     // deleveryStatus:{
     //     type:String,
     //     enum:["none","confirmed","shipped","submitted","delivered"],

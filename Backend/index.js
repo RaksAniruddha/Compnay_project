@@ -3,8 +3,9 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import userRoute from './route/user.route.js';
-import productRoute from './route/product.route.js';
-import categoryRoute from './route/category.route.js';
+import productRoute from './route/AdminRoutes/product.route.js';
+import categoryRoute from './route/AdminRoutes/category.route.js';
+import adminRoute from './route/AdminRoutes/isAuthAdmin.js'
 
 import { connectDb } from './database/connectDb.js';
 dotenv.config({});
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/product",productRoute);
 app.use("/api/v1/category",categoryRoute);
+app.use("/api/v1/admin",adminRoute);
 
 app.listen(PORT,()=>{
     console.log(`server running at ${PORT}`);
