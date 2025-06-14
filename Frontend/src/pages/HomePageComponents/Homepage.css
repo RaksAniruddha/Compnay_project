@@ -1,0 +1,19 @@
+.carousel .control-dots {
+  bottom: 5px; /* Adjust position */
+}
+
+.carousel .control-dots .dot {
+  /* background: #ffffff; Change color */
+  background: aliceblue;
+  width: 40px;
+  height: 5px;
+  margin: 0 1px;
+  border-radius: 5px 0px 0px 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.carousel .control-dots .dot.selected {
+  background: white; /* Active dot color (e.g., Tailwind blue-600) */
+  transform: scale(1);
+}

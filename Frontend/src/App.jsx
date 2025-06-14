@@ -7,7 +7,9 @@ import ResetPassword from './pages/Authpages/ResetPassword'
 import Checkemail from './pages/Authpages/Checkemail'
 import Verification from './pages/Authpages/Verification'
 import Createnewpassword from './pages/Authpages/Createnewpassword'
-import Homepage from './pages/Homepage'
+// import Homepage from './pages/Homepage'
+import Herosection from './pages/HomePageComponents/Herosection'
+import HomeCategoties from './pages/HomePageComponents/HomeCategoties'
 
 function App() {
   const appRouter= createBrowserRouter([
@@ -17,7 +19,10 @@ function App() {
       children:[
         {
           path:"/",
-          element:<Homepage/>
+          element:<>
+            <Herosection/>
+            <HomeCategoties/>
+          </>
         },
         {
           path:"/register",

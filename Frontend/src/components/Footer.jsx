@@ -4,7 +4,7 @@ import { HomeIcons } from '@/assets/HomePageAsset/HomeExport'
 
 function Footer() {
     return (
-        <div className='w-screen   bg-[#3C4242] text-sm text-[#F6F6F6]'>
+        <div className='w-full  bg-[#3C4242] text-sm text-[#F6F6F6]'>
             <div className='flex flex-col justify-center items-center gap-3'>
                 <div className='flex gap-30 mt-10 mb-4'>
                     <div>
