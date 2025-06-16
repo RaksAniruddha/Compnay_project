@@ -15,6 +15,17 @@ import NewArivalCard1 from '../HomePageAsset/newArivalCard1.png'
 import NewArivalCard2 from '../HomePageAsset/newArivalCard2.png'
 import NewArivalCard3 from '../HomePageAsset/newArivalCard3.png'
 import NewArivalCard4 from '../HomePageAsset/newArivalCard4.png'
+import BigArivalcard1 from '../HomePageAsset/bigSavingZoneCard1.png'
+import BigArivalcard2 from '../HomePageAsset/bigSavingZoneCard2.png'
+import BigArivalcard3 from '../HomePageAsset/bigSavingZoneCard3.png'
+import DownArrow from '../HomePageAsset/HomepageIcon/downArrow.png'
+import DownArrowBlack from '../HomePageAsset/HomepageIcon/arrowDownBalck.png'
+import BigArivalCard4 from '../HomePageAsset/bigSavingZoneCard4.png'
+import BigArivalCard5 from '../HomePageAsset/bigSavingZoneCard5.png'
+import BigArivalCard6 from '../HomePageAsset/bigSavingZoneCard6.png'
+import BigArivalCard7 from '../HomePageAsset/bigSavingZoneCard7.png'
+import  FirstHome from '../HomePageAsset/2ndHome.png'
+
 
 export const HomeIcons={
     Facebook,
@@ -26,7 +37,9 @@ export const HomeIcons={
     Line,
     Icon,
     Arrow,
-    rightArrow
+    rightArrow,
+    DownArrow,
+    DownArrowBlack,
 }
 
 export const HomeImages={
@@ -36,5 +49,13 @@ export const HomeImages={
     NewArivalCard1,
     NewArivalCard2,
     NewArivalCard3,
-    NewArivalCard4
+    NewArivalCard4,
+    BigArivalcard1,
+    BigArivalcard2,
+    BigArivalcard3,
+    BigArivalCard4,
+    BigArivalCard5,
+    BigArivalCard6,
+    BigArivalCard7,
+    FirstHome
 }
